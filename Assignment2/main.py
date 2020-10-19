@@ -16,10 +16,10 @@ class ConvNet(nn.Module):
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=2, stride=2))
         self.fc = nn.Linear(5 * 5 * 16, num_classes)
-    def forward(self, out):
-        out = self.layer1(out)
+    def forward(self, x):
+        out = self.layer1(x)
         out = self.layer2(out)
-        out = out.view(-1, 16 * 5 * 5)
+        out = out.reshape(out.size(0), -1)
         out = self.fc(out)
         return out
 
@@ -27,9 +27,9 @@ class ConvNet(nn.Module):
 device = 'cpu'
 
 #Hyper parameters
-num_epochs = 5
+num_epochs = 10
 num_classes = 10
-batch_size = 100
+batch_size = 50
 learning_rate = 0.001
 
 transform = transforms.Compose(
@@ -67,7 +67,7 @@ for epoch in range(num_epochs):
         loss.backward()
         optimizer.step()
 
-        if i % 2000 == 1999:
+        if (i+1)%100 == 0:
             print('Epoch [{}/{}], Step [{}/{}], Loss: {:.4f}'
                   .format(epoch + 1, num_epochs, i + 1, total_step, loss.item()))
 
